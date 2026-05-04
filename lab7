@@ -1,0 +1,34 @@
+from transformers import BertTokenizer, TFBertForSequenceClassification
+import tensorflow as tf
+
+# 🔹 Step 1: Load Tokenizer
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+
+# 🔹 Step 2: Sample Data
+texts = ["I love AI", "I hate bugs"]
+labels = [1, 0]
+
+# 🔹 Step 3: Tokenization
+encodings = tokenizer(
+    texts,
+    padding=True,
+    truncation=True,
+    return_tensors="tf"
+)
+
+# 🔹 Step 4: Load Pre-trained BERT
+model = TFBertForSequenceClassification.from_pretrained('bert-base-uncased')
+
+# 🔹 Step 5: Compile
+model.compile(
+    optimizer=tf.keras.optimizers.Adam(learning_rate=3e-5),
+    loss=model.compute_loss,
+    metrics=['accuracy']
+)
+
+# 🔹 Step 6: Train
+model.fit(encodings['input_ids'], labels, epochs=2)
+
+# 🔹 Step 7: Predict
+outputs = model.predict(encodings['input_ids'])
+print(outputs)
